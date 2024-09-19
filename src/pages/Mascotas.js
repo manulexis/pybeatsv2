@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from '../api/axiosConfig';
 
 const Mascotas = () => {
   const [mascotas, setMascotas] = useState([]);
@@ -7,24 +8,49 @@ const Mascotas = () => {
   const [edad, setEdad] = useState('');
   const [dueno, setDueno] = useState('');
 
-  const handleAddMascota = () => {
-    const nuevaMascota = { nombre, raza, edad, dueno };
-    setMascotas([...mascotas, nuevaMascota]);
-    setNombre('');
-    setRaza('');
-    setEdad('');
-    setDueno('');
+  // Obtener las mascotas del backend al cargar el componente
+  useEffect(() => {
+    const obtenerMascotas = async () => {
+      try {
+        const response = await axios.get('/mascotas/');
+        setMascotas(response.data);
+      } catch (error) {
+        console.error('Error al obtener las mascotas:', error);
+      }
+    };
+
+    obtenerMascotas();
+  }, []);
+
+  // Agregar una nueva mascota
+  const handleAddMascota = async () => {
+    const nuevaMascota = { nombre, raza, edad: parseInt(edad), dueno };
+    try {
+      await axios.post('/mascotas/crear/', nuevaMascota);
+      const response = await axios.get('/mascotas/');  // Obtener la lista actualizada
+      setMascotas(response.data);
+      setNombre('');
+      setRaza('');
+      setEdad('');
+      setDueno('');
+    } catch (error) {
+      console.error('Error al agregar la mascota:', error);
+    }
   };
 
-  const handleRemoveMascota = (index) => {
-    const nuevasMascotas = mascotas.filter((_, i) => i !== index);
-    setMascotas(nuevasMascotas);
+  // Eliminar una mascota
+  const handleRemoveMascota = async (id) => {
+    try {
+      await axios.delete(`/mascotas/eliminar/${id}/`);
+      const response = await axios.get('/mascotas/');  // Obtener la lista actualizada
+      setMascotas(response.data);
+    } catch (error) {
+      console.error('Error al eliminar la mascota:', error);
+    }
   };
 
   return (
     <div>
-      <br />
-      <br />
       <div className="container">
         <h1 className="text-center">Bienvenido al módulo Mascotas</h1>
 
@@ -105,7 +131,7 @@ const Mascotas = () => {
                   <td>
                     <button
                       className="btn btn-danger"
-                      onClick={() => handleRemoveMascota(index)}
+                      onClick={() => handleRemoveMascota(mascota.id)}
                     >
                       X
                     </button>
@@ -121,5 +147,4 @@ const Mascotas = () => {
 };
 
 export default Mascotas;
-
 

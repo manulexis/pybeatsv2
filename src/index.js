@@ -5,6 +5,7 @@ import App from './App';
 import reportWebVitals from './reportWebVitals';
 
 import 'bootstrap/dist/css/bootstrap.min.css';//aca estoy importando los estilos de bootstrap
+import 'bootstrap/dist/js/bootstrap.bundle.min';
 
 
 const root = ReactDOM.createRoot(document.getElementById('root'));

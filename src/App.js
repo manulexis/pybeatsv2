@@ -1,26 +1,32 @@
-import logo from './logo.svg';
-//import './App.css';//esto es el estilo personalizado de react
-
-import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';//estamos instalando los modulos de reac router dom
-import Navbar from './components/Navbar';  // Importa el Navbar
-//desde aca se enruta las pestañas
-import Home from './pages/Home';//esto es una ruta para la pagina principañ
-import Productos from './pages/Productos';//esto es una ruta para la pagina de productos
+import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
+import Navbar from './components/Navbar'; // Importa el Navbar
+import Login from './pages/Login';
+import Home from './pages/Home'; // Ruta para la página principal
+import Productos from './pages/Productos'; // Ruta para la página de productos
 import Mascotas from './pages/Mascotas';
+import Merca from './pages/Merca';
+import Presentaciones from './pages/Presentaciones';
+import Registro from './pages/Registro';
+
+import Usuario from './pages/Usuario';
 
 function App() {
   return (
     <Router>
       <div className="App">
         <header className="App-header">
-<Navbar />  {/* Incluye el Navbar aquí */}
-
+          <Navbar />  {/* Incluye el Navbar aquí */}
+          
           <Routes>
+          <Route path="/login" element={<Login />} />
             <Route path="/home" element={<Home />} />
             <Route path="/productos" element={<Productos />} />
             <Route path="/mascotas" element={<Mascotas />} />
-
-            {/* Puedes agregar más rutas aquí si es necesario */}
+            <Route path="/merca" element={<Merca />} />
+            <Route path="/presentaciones" element={<Presentaciones />} />
+            <Route path="/usuario" element={<Usuario />} />
+            <Route path="/registro" element={<Registro />} />
+            <Route path="*" element={<Navigate to="/login" />} />
           </Routes>
         </header>
       </div>
