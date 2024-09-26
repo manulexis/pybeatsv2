@@ -1,39 +1,22 @@
+// src/pages/Home.js
 import React from 'react';
 
-import { useNavigate } from 'react-router-dom';
-
 const Home = () => {
-
-  const navigate = useNavigate();//modulo para navegar entre paginas
-
-  const ir_productos_navegador = () => {
-    navigate('/productos');
-  };
-
-  
-
-
   return (
-    <div>
-      <div className="container">
-        <br/>
-        <br/>
-        <h1 className="text-center">Bienvenido a Home</h1>
-        <br/>
-        <br/>
-        
-        <button class="btn btn-success" onClick={ir_productos_navegador}>
-          Productos
-        </button>
-
-        {/*
-        <button className="btn btn-primary">Haz clic aquí</button>
-        */}
-
+      <div className="container text-center mt-5">
+          <div className="row justify-content-center">
+              <div className="col-md-8">
+                  <h1 className="display-4">Bienvenido a Home</h1>
+                  <p className="lead">
+                      This is the main landing page of your application.
+                  </p>
+                  <div className="alert alert-info" role="alert">
+                      We're excited to have you here! Explore our site and discover all the features we have to offer.
+                  </div>
+                  <button className="btn btn-primary btn-lg">Get Started</button>
+              </div>
+          </div>
       </div>
-    </div>
   );
 };
-
 export default Home;
-//<div className="container"> = esto es el contenedor del lo que esta dentro de el html

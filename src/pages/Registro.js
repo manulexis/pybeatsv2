@@ -1,104 +1,152 @@
-import React, { useState } from 'react';
-import axios from '../api/axiosConfig';
+// src/pages/Registro.js
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
 const Registro = () => {
-  const [username, setUsername] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [nombre, setNombre] = useState('');
-  const [apellido, setApellido] = useState('');
-  const [genero, setGenero] = useState('');
-  const [fk_pais, setFkPais] = useState('');  // Esto será convertido a número
-  const [error, setError] = useState('');
+  const [formData, setFormData] = useState({
+    nombre: '',
+    apellido: '',
+    correo: '',
+    fk_pais: '',
+    fk_rol: '',
+    username: '',  // Nuevo campo para el nombre de usuario
+    password: '',  // Campo para la contraseña
+  });
+
+  const [roles, setRoles] = useState([]);  // Cargar roles desde el backend
+  const [paises, setPaises] = useState([]); // Cargar los países desde el backend
   const navigate = useNavigate();
 
-  const handleRegister = async () => {
-    if (password !== confirmPassword) {
-      setError('Las contraseñas no coinciden');
-      return;
-    }
+  // Cargar roles y países desde el backend
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const rolesResponse = await axios.get('http://127.0.0.1:8000/api/roles/');
+        const paisesResponse = await axios.get('http://127.0.0.1:8000/api/paises/');
+        setRoles(rolesResponse.data);
+        setPaises(paisesResponse.data);
+      } catch (error) {
+        console.error('Error al cargar datos:', error);
+      }
+    };
 
-    // Asegurarse de que fk_pais sea numérico (parsearlo a número entero)
-    const paisId = fk_pais ? parseInt(fk_pais, 10) : null;
+    fetchData();
+  }, []);
 
-    // Verificar los datos antes de hacer la solicitud
-    console.log({
-      username,
-      email,
-      password,
-      nombre,
-      apellido,
-      genero,
-      fk_pais: paisId  // Asegurarse de que sea numérico
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
     });
+  };
 
+  const handleSubmit = async (e) => {
+    e.preventDefault();
     try {
-      await axios.post('/api/register/', {
-        username,
-        email,
-        password,
-        nombre,
-        apellido,
-        genero,
-        fk_pais: paisId  // Asegurarse de enviar el número
-      });
-      navigate('/login');  // Redirige al login después de un registro exitoso
+      await axios.post('http://127.0.0.1:8000/api/usuarios/', formData); // Enviar los datos al backend
+      navigate('/home'); // Redirige al usuario después del registro
     } catch (error) {
-      console.error('Error:', error.response?.data || 'Error en el registro');
-      setError('Error en el registro, intenta de nuevo');
+      console.error('Error al registrar el usuario:', error);
     }
   };
 
   return (
-    <div className="container">
-      <h1 className="text-center">Registro de Usuario</h1>
-      <div className="card mt-4 mx-auto" style={{ width: '50%' }}>
-        <div className="card-header">
-          <h2 className="text-center">Crear una cuenta</h2>
+    <div className="container mt-5">
+      <h2>Registro de Usuario</h2>
+      <form onSubmit={handleSubmit}>
+        <div className="form-group">
+          <label>Nombre:</label>
+          <input
+            type="text"
+            name="nombre"
+            value={formData.nombre}
+            onChange={handleChange}
+            className="form-control"
+            required
+          />
         </div>
-        <div className="card-body">
-          <form>
-            <div className="mb-3">
-              <label className="form-label">Nombre de usuario</label>
-              <input type="text" className="form-control" value={username} onChange={(e) => setUsername(e.target.value)} required />
-            </div>
-            <div className="mb-3">
-              <label className="form-label">Correo Electrónico</label>
-              <input type="email" className="form-control" value={email} onChange={(e) => setEmail(e.target.value)} required />
-            </div>
-            <div className="mb-3">
-              <label className="form-label">Nombre</label>
-              <input type="text" className="form-control" value={nombre} onChange={(e) => setNombre(e.target.value)} required />
-            </div>
-            <div className="mb-3">
-              <label className="form-label">Apellido</label>
-              <input type="text" className="form-control" value={apellido} onChange={(e) => setApellido(e.target.value)} required />
-            </div>
-            <div className="mb-3">
-              <label className="form-label">Género</label>
-              <input type="text" className="form-control" value={genero} onChange={(e) => setGenero(e.target.value)} />
-            </div>
-            <div className="mb-3">
-              <label className="form-label">País (ID)</label>
-              <input type="text" className="form-control" value={fk_pais} onChange={(e) => setFkPais(e.target.value)} />
-            </div>
-            <div className="mb-3">
-              <label className="form-label">Contraseña</label>
-              <input type="password" className="form-control" value={password} onChange={(e) => setPassword(e.target.value)} required />
-            </div>
-            <div className="mb-3">
-              <label className="form-label">Confirmar Contraseña</label>
-              <input type="password" className="form-control" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} required />
-            </div>
-            {error && <p className="text-danger">{error}</p>}
-            <div className="text-center">
-              <button type="button" className="btn btn-success" onClick={handleRegister}>Registrarse</button>
-            </div>
-          </form>
+        <div className="form-group">
+          <label>Apellido:</label>
+          <input
+            type="text"
+            name="apellido"
+            value={formData.apellido}
+            onChange={handleChange}
+            className="form-control"
+            required
+          />
         </div>
-      </div>
+        <div className="form-group">
+          <label>Correo:</label>
+          <input
+            type="email"
+            name="correo"
+            value={formData.correo}
+            onChange={handleChange}
+            className="form-control"
+            required
+          />
+        </div>
+        <div className="form-group">
+          <label>Nombre de usuario:</label>
+          <input
+            type="text"
+            name="username"
+            value={formData.username}
+            onChange={handleChange}
+            className="form-control"
+            required
+          />
+        </div>
+        <div className="form-group">
+          <label>País:</label>
+          <select
+            name="fk_pais"
+            value={formData.fk_pais}
+            onChange={handleChange}
+            className="form-control"
+            required
+          >
+            <option value="">Seleccionar</option>
+            {paises.map((pais) => (
+              <option key={pais.id} value={pais.id}>
+                {pais.descripcion}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className="form-group">
+          <label>Rol (opcional):</label>
+          <select
+            name="fk_rol"
+            value={formData.fk_rol}
+            onChange={handleChange}
+            className="form-control"
+          >
+            <option value="">Seleccionar</option>
+            {roles.map((rol) => (
+              <option key={rol.id_rol} value={rol.id_rol}>
+                {rol.descripcion}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className="form-group">
+          <label>Contraseña:</label>
+          <input
+            type="password"
+            name="password"
+            value={formData.password}
+            onChange={handleChange}
+            className="form-control"
+            required
+          />
+        </div>
+        <button type="submit" className="btn btn-primary mt-3">
+          Registrarse
+        </button>
+      </form>
     </div>
   );
 };
